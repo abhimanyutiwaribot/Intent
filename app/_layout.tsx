@@ -6,7 +6,6 @@ import { Colors } from '../constants/Colors';
 import { getSettings } from '../storage/settingsStorage';
 import { requestPermissions, scheduleDailyReminder } from '../utils/notificationUtils';
 
-
 const ThemeContext = createContext<{
   theme: 'light' | 'dark';
   preference: 'light' | 'dark' | 'system';
