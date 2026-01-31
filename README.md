@@ -1,50 +1,66 @@
-# Welcome to your Expo app 👋
+# Intent — One thing matters.
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Intent is a premium, minimal, and highly focused daily ritual app designed to replace the chaos of traditional "todo" lists with singular, meaningful focus.
 
-## Get started
+## The Philosophy
+We live in an age of over-productivity where "getting things done" often leads to burnout. **Intent** is an anti-todo app. It asks you one question every morning:
+> *What is the ONE thing that matters today?*
 
-1. Install dependencies
+Once you set your intent, it is **locked**. No adding more tasks, no shuffling priorities. Just you and your commitment. At the end of the day, you reflect: *Did I make it happen?*
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## Key Features
+- **Singular Focus**: Set one intent per day. No distractions.
+- **Daily Reflection**: A minimal, elegant check-in flow to mark your day as successful or a lesson learned.
+- **Premium Animations**: 
+    - **Realme-style Circular Reveal**: Seamlessly switch between Light and Dark modes with a high-end expanding circle animation.
+    - **Spring Content Entrance**: Screens "breath" into life with subtle spring-action transitions.
+- **7-Day History**: Keep track of your focus over the past week with a clean, typography-first history view.
+- **Daily Ritual Reminders**: Customizable local notifications to remind you to check in before the day ends.
+- **Adaptive UI**: Full support for Light, Dark, and System appearance settings.
+- **Local & Private**: All data stays on your device using asynchronous local storage.
 
-   ```bash
-   npx expo start
-   ```
+---
 
-In the output, you'll find options to open the app in a
+## Tech Stack
+- **Framework**: [Expo](https://expo.dev) & [React Native](https://reactnative.dev)
+- **Routing**: [Expo Router](https://docs.expo.dev/router/introduction/) (File-based routing)
+- **Icons**: [Lucide React Native](https://lucide.dev)
+- **Storage**: [Async Storage](https://react-native-async-storage.github.io/async-storage/)
+- **Animations**: Native `Animated` API with `useNativeDriver` for 60FPS performance.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Getting Started
 
-## Get a fresh project
-
-When you're ready, run:
-
+### 1. Install Dependencies
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 2. Start Developing
+```bash
+npx expo start
+```
 
-## Learn more
+### 3. Clear Cache (Recommended after updates)
+```bash
+npx expo start --clear
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+---
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Design Principles
+- **Typography First**: Clean, bold headers and ample white space (or "dark space").
+- **Minimalist Palette**: High-contrast colors that adapt perfectly to your environment.
+- **Tactile Feedback**: Interactive elements like pill-shaped buttons and spring transitions make the digital experience feel physical.
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## Privacy
+Intent is 100% offline. No servers, no tracking, and no data collection. Your intents and reflections are yours alone.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+**Made for those who value focus over volume.**
