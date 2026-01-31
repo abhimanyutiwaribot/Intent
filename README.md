@@ -4,7 +4,7 @@ Intent is a premium, minimal, and highly focused daily ritual app designed to re
 
 ## The Philosophy
 We live in an age of over-productivity where "getting things done" often leads to burnout. **Intent** is an anti-todo app. It asks you one question every morning:
-> *What is the ONE thing that matters today?*
+> *What's the ONE thing that matters today?*
 
 Once you set your intent, it is **locked**. No adding more tasks, no shuffling priorities. Just you and your commitment. At the end of the day, you reflect: *Did I make it happen?*
 
