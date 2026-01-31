@@ -22,6 +22,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, message, buttons, onClose }) => {
   const { theme: activeTheme } = useAppTheme();
   const theme = Colors[activeTheme] || Colors.light;
+  const separatorColor = activeTheme === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)';
+
   const [fadeAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.9));
 
@@ -78,7 +80,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, message, butt
             <Text style={[styles.message, { color: theme.secondaryText }]}>{message}</Text>
           </View>
 
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, { borderTopColor: separatorColor }]}>
             {buttons.map((button, index) => {
               const isDestructive = button.style === 'destructive';
               const isCancel = button.style === 'cancel';
@@ -88,8 +90,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, message, butt
                   key={index}
                   style={[
                     styles.button,
-                    index > 0 && { borderLeftWidth: 1, borderLeftColor: theme.border },
-                    index === 0 && buttons.length > 2 && { borderBottomWidth: 1, borderBottomColor: theme.border }
+                    index > 0 && { borderLeftWidth: 1, borderLeftColor: separatorColor },
+                    index === 0 && buttons.length > 2 && { borderBottomWidth: 1, borderBottomColor: separatorColor }
                   ]}
                   onPress={() => {
                     button.onPress();
@@ -158,7 +160,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.05)',
   },
   button: {
     flex: 1,
