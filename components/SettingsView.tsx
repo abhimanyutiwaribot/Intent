@@ -1,14 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Bell, Check, ChevronRight, Clock, HelpCircle, Info, Moon, Sun, Trash2 } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
-import { Platform, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, Platform, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../app/_layout';
 import { Colors } from '../constants/Colors';
 import { AppSettings, getSettings, saveSettings } from '../storage/settingsStorage';
 import { cancelAllReminders, scheduleDailyReminder } from '../utils/notificationUtils';
 import CustomAlert from './CustomAlert';
+import TimePickerModal from './TimePickerModal';
 
 interface SettingsViewProps {
   onBackPress: () => void;
@@ -63,14 +63,14 @@ export default function SettingsView({ onHistoryCleared }: SettingsViewProps) {
     }
   };
 
-  const handleTimeChange = async (event: DateTimePickerEvent, selectedDate?: Date) => {
-    setShowTimePicker(Platform.OS === 'ios');
-    if (selectedDate && settings) {
-      const hour = selectedDate.getHours();
-      const minute = selectedDate.getMinutes();
-      const newSettings = await saveSettings({ reminderHour: hour, reminderMinute: minute });
+  const handleSaveTime = async (hour: number, minute: number) => {
+    if (settings) {
+      const newSettings = await saveSettings({
+        reminderHour: hour,
+        reminderMinute: minute
+      });
       setSettings(newSettings);
-
+      setShowTimePicker(false);
       if (newSettings.reminderEnabled) {
         await scheduleDailyReminder(hour, minute);
       }
@@ -160,15 +160,14 @@ export default function SettingsView({ onHistoryCleared }: SettingsViewProps) {
             </TouchableOpacity>
           )}
 
-          {showTimePicker && (
-            <DateTimePicker
-              value={new Date(new Date().setHours(settings.reminderHour, settings.reminderMinute))}
-              mode="time"
-              is24Hour={false}
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={handleTimeChange}
-            />
-          )}
+          <TimePickerModal
+            visible={showTimePicker}
+            hour={settings.reminderHour}
+            minute={settings.reminderMinute}
+            onClose={() => setShowTimePicker(false)}
+            onSave={handleSaveTime}
+            theme={theme}
+          />
         </View>
 
         <View style={styles.section}>
@@ -321,5 +320,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontStyle: 'italic',
     opacity: 0.6,
-  }
+  },
 });
+
