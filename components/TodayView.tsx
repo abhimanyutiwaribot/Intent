@@ -1,7 +1,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { ArrowRight, History, Settings } from 'lucide-react-native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AppState, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../app/_layout';
 import { Colors } from '../constants/Colors';
@@ -10,14 +10,18 @@ import { formatDate, getTodayDateString } from '../utils/dateUtils';
 import IntentInput from './IntentInput';
 import PrimaryButton from './PrimaryButton';
 import Skeleton from './Skeleton';
+import CustomAlert from './CustomAlert';
+import { getSettings, saveSettings } from '../storage/settingsStorage';
+import { requestPermissions, scheduleDailyReminder } from '../utils/notificationUtils';
 
 interface TodayViewProps {
   onHistoryPress: () => void;
   onSettingsPress: () => void;
+  onSettingsUpdate?: () => void;
   refreshKey?: number;
 }
 
-export default function TodayView({ onHistoryPress, onSettingsPress, refreshKey }: TodayViewProps) {
+export default function TodayView({ onHistoryPress, onSettingsPress, onSettingsUpdate, refreshKey }: TodayViewProps) {
   const router = useRouter();
   const { theme: activeTheme } = useAppTheme();
   const theme = Colors[activeTheme] || Colors.light;
@@ -25,6 +29,7 @@ export default function TodayView({ onHistoryPress, onSettingsPress, refreshKey 
   const [intent, setIntent] = useState<string>('');
   const [savedIntent, setSavedIntent] = useState<IntentRecord | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [showReminderPrompt, setShowReminderPrompt] = useState(false);
 
   const loadTodayData = async () => {
     setIsLoading(true);
@@ -52,13 +57,81 @@ export default function TodayView({ onHistoryPress, onSettingsPress, refreshKey 
     }, [])
   );
 
+  // Auto-refresh when app comes to foreground or at midnight
+  useEffect(() => {
+    let lastDate = getTodayDateString();
+
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        const currentDate = getTodayDateString();
+        if (currentDate !== lastDate) {
+          lastDate = currentDate;
+          loadTodayData();
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    // Midnight check
+    const now = new Date();
+    const tonight = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1, // Tomorrow
+      0, 0, 0 // Midnight
+    );
+    const msToMidnight = tonight.getTime() - now.getTime();
+
+    const midnightTimer = setTimeout(() => {
+      loadTodayData();
+      // Re-run the effect to set the next midnight timer
+      lastDate = getTodayDateString();
+    }, msToMidnight + 1000); // Add 1s buffer
+
+    return () => {
+      subscription.remove();
+      clearTimeout(midnightTimer);
+    };
+  }, []);
+
   const handleSave = async () => {
     if (!intent.trim()) return;
     Keyboard.dismiss();
     const newRecord = await saveTodayIntent(intent);
     if (newRecord) {
       setSavedIntent(newRecord);
+
+      // Check for first-time reminder prompt with a slight delay for better UX
+      const settings = await getSettings();
+      if (!settings.hasSeenReminderPrompt) {
+        setTimeout(() => {
+          setShowReminderPrompt(true);
+        }, 4000);
+      }
     }
+  };
+
+  const handleEnableReminder = async () => {
+    setShowReminderPrompt(false);
+    const granted = await requestPermissions();
+    if (granted) {
+      const settings = await saveSettings({
+        reminderEnabled: true,
+        hasSeenReminderPrompt: true
+      });
+      await scheduleDailyReminder(settings.reminderHour, settings.reminderMinute);
+      if (onSettingsUpdate) onSettingsUpdate();
+    } else {
+      await saveSettings({ hasSeenReminderPrompt: true });
+      if (onSettingsUpdate) onSettingsUpdate();
+    }
+  };
+
+  const handleSkipReminder = async () => {
+    setShowReminderPrompt(false);
+    await saveSettings({ hasSeenReminderPrompt: true });
+    if (onSettingsUpdate) onSettingsUpdate();
   };
 
   if (isLoading) return (
@@ -165,6 +238,24 @@ export default function TodayView({ onHistoryPress, onSettingsPress, refreshKey 
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+      <CustomAlert
+        visible={showReminderPrompt}
+        title="Stay Focused"
+        message="Would you like a reminder tonight to check in on your intent?"
+        onClose={handleSkipReminder}
+        buttons={[
+          {
+            text: "Not Now",
+            style: "cancel",
+            onPress: handleSkipReminder
+          },
+          {
+            text: "Enable Reminder",
+            style: "default",
+            onPress: handleEnableReminder
+          }
+        ]}
+      />
     </SafeAreaView>
   );
 }
@@ -182,7 +273,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -204,7 +295,7 @@ const styles = StyleSheet.create({
   },
   promptText: {
     fontSize: 26,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
     lineHeight: 34,
     letterSpacing: -0.5,
@@ -215,14 +306,14 @@ const styles = StyleSheet.create({
   },
   todayLabel: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textTransform: 'uppercase',
     letterSpacing: 2,
     marginBottom: 16,
   },
   savedIntentText: {
     fontSize: 32,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
     marginBottom: 40,
     lineHeight: 40,
@@ -233,7 +324,7 @@ const styles = StyleSheet.create({
   },
   editButtonText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
     textDecorationLine: 'underline',
   },
   checkInButton: {
@@ -253,7 +344,7 @@ const styles = StyleSheet.create({
   },
   checkInText: {
     fontSize: 17,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: -0.3,
   },
   statusContainer: {
@@ -268,12 +359,12 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: -0.2,
   },
   reflectionText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
     fontStyle: 'italic',
     textAlign: 'center',
   }
