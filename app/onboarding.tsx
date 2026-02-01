@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { ArrowRight, ShieldCheck, Target, Zap } from 'lucide-react-native';
+import { ArrowRight } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -14,19 +14,16 @@ const SLIDES = [
     id: '1',
     title: 'One thing matters.',
     description: 'Choose the most important task for today.',
-    icon: Target,
   },
   {
     id: '2',
     title: 'Do it.',
     description: 'Focus on your intent during the day.',
-    icon: ShieldCheck,
   },
   {
     id: '3',
     title: 'Check in.',
     description: 'Mark it done and move on.',
-    icon: Zap,
   },
 ];
 
@@ -76,12 +73,8 @@ export default function OnboardingScreen() {
   };
 
   const renderItem = ({ item }: { item: typeof SLIDES[0] }) => {
-    const Icon = item.icon;
     return (
       <View style={[styles.slide, { width }]}>
-        <View style={[styles.iconContainer, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Icon size={64} color={theme.text} strokeWidth={1.5} />
-        </View>
         <Text style={[styles.title, { color: theme.text }]}>{item.title}</Text>
         <Text style={[styles.description, { color: theme.secondaryText }]}>{item.description}</Text>
       </View>
@@ -173,7 +166,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
   slide: {
     flex: 1,
@@ -181,25 +174,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 40,
   },
-  iconContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 48,
-  },
   title: {
     fontSize: 32,
-    fontWeight: '800',
+    fontFamily: 'Inter-ExtraBold',
     textAlign: 'center',
     marginBottom: 16,
     letterSpacing: -1,
   },
   description: {
     fontSize: 17,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
     textAlign: 'center',
     lineHeight: 26,
   },
@@ -230,7 +214,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: -0.2,
   },
 });

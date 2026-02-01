@@ -132,14 +132,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textTransform: 'uppercase',
     letterSpacing: 2,
     marginBottom: 24,
   },
   intentText: {
     fontSize: 32,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
     lineHeight: 42,
     letterSpacing: -1,
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
     marginBottom: 64,
   },
   buttonRow: {
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     marginTop: 4,
     textTransform: 'uppercase',
     letterSpacing: 1,
