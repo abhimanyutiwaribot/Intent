@@ -53,12 +53,14 @@ export default function MainPager() {
           <SettingsView
             onBackPress={scrollToToday}
             onHistoryCleared={handleHistoryCleared}
+            refreshKey={refreshKey}
           />
         </View>
         <View style={styles.page}>
           <TodayView
             onHistoryPress={scrollToHistory}
             onSettingsPress={scrollToSettings}
+            onSettingsUpdate={handleHistoryCleared}
             refreshKey={refreshKey}
           />
         </View>
