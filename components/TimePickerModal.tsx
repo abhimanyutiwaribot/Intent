@@ -117,7 +117,7 @@ export default function TimePickerModal({
               style={[styles.modalButton, { borderLeftWidth: 1, borderLeftColor: theme.border }]}
               onPress={handleSave}
             >
-              <Text style={[styles.modalButtonText, { color: theme.text, fontWeight: '700' }]}>Save</Text>
+              <Text style={[styles.modalButtonText, { color: theme.text, fontFamily: 'Inter-Bold' }]}>Save</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
     marginTop: 24,
     marginBottom: 20,
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   timeSeparator: {
     fontSize: 40,
-    fontWeight: '300',
+    fontFamily: 'Inter-Regular',
     width: 20,
     textAlign: 'center',
   },
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   ampmText: {
     fontSize: 16,
-    fontWeight: '800',
+    fontFamily: 'Inter-ExtraBold',
     letterSpacing: 0.5,
   },
   modalActions: {
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   modalButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
   inputWrapper: {
     alignItems: 'center',
@@ -196,13 +196,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1.5,
     fontSize: 32,
-    fontWeight: '800',
+    fontFamily: 'Inter-ExtraBold',
     textAlign: 'center',
     fontVariant: ['tabular-nums'],
   },
   inputLabel: {
     fontSize: 10,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: 1,
   }
 });

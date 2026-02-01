@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
     textAlign: 'center',
     padding: 10,
     minHeight: 100,

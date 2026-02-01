@@ -22,7 +22,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title, onPress, disabled,
     <TouchableOpacity
       style={[
         styles.button,
-        { backgroundColor: theme.text }, 
+        { backgroundColor: theme.text },
         isSecondary && { backgroundColor: theme.card, borderWidth: 1, borderColor: theme.border },
         isOutline && { backgroundColor: 'transparent', borderWidth: 1.5, borderColor: theme.text },
         disabled && { opacity: 0.3 },
@@ -35,7 +35,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({ title, onPress, disabled,
       <Text
         style={[
           styles.text,
-          { color: theme.background }, 
+          { color: theme.background },
           isSecondary && { color: theme.text },
           isOutline && { color: theme.text },
         ] as TextStyle[]}
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   button: {
     height: 60,
     paddingHorizontal: 32,
-    borderRadius: 30, 
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 17,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: -0.3,
   },
 });
