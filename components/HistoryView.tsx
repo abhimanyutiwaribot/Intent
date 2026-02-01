@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: -0.5,
   },
   listContent: {
@@ -138,13 +138,13 @@ const styles = StyleSheet.create({
   },
   itemDate: {
     fontSize: 13,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   itemIntent: {
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
     lineHeight: 24,
   },
   badge: {
@@ -160,6 +160,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
   }
 });
