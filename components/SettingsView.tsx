@@ -6,13 +6,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../app/_layout';
 import { Colors } from '../constants/Colors';
 import { AppSettings, getSettings, saveSettings } from '../storage/settingsStorage';
-import { cancelAllReminders, scheduleDailyReminder } from '../utils/notificationUtils';
+import { cancelAllReminders, requestPermissions, scheduleDailyReminder, scheduleMorningReminderOnly } from '../utils/notificationUtils';
 import CustomAlert from './CustomAlert';
 import TimePickerModal from './TimePickerModal';
 
 interface SettingsViewProps {
   onBackPress: () => void;
   onHistoryCleared?: () => void;
+  refreshKey?: number;
 }
 
 interface AlertConfig {
@@ -22,7 +23,7 @@ interface AlertConfig {
   buttons: { text: string; onPress: () => void; style?: 'default' | 'cancel' | 'destructive' }[];
 }
 
-export default function SettingsView({ onHistoryCleared }: SettingsViewProps) {
+export default function SettingsView({ onHistoryCleared, refreshKey }: SettingsViewProps) {
   const { theme: activeTheme, preference, setThemePreference, setNeedsOnboarding } = useAppTheme();
   const theme = Colors[activeTheme] || Colors.light;
 
@@ -41,7 +42,7 @@ export default function SettingsView({ onHistoryCleared }: SettingsViewProps) {
       setSettings(data);
     };
     loadSettings();
-  }, []);
+  }, [refreshKey]);
 
   const showAlert = (title: string, message: string, buttons: AlertConfig['buttons']) => {
     setAlertConfig({ visible: true, title, message, buttons });
@@ -53,13 +54,33 @@ export default function SettingsView({ onHistoryCleared }: SettingsViewProps) {
 
   const handleToggleReminder = async (value: boolean) => {
     if (!settings) return;
-    const newSettings = await saveSettings({ reminderEnabled: value });
-    setSettings(newSettings);
 
     if (value) {
-      await scheduleDailyReminder(newSettings.reminderHour, newSettings.reminderMinute);
+      const granted = await requestPermissions();
+      if (granted) {
+        const newSettings = await saveSettings({
+          reminderEnabled: true,
+          hasSeenReminderPrompt: true
+        });
+        setSettings(newSettings);
+        await scheduleDailyReminder(newSettings.reminderHour, newSettings.reminderMinute);
+      } else {
+        // Option: Show alert that permission is needed
+        setAlertConfig({
+          visible: true,
+          title: "Permission Required",
+          message: "Please enable notifications in your device settings to receive reminders.",
+          buttons: [{ text: "OK", onPress: hideAlert }]
+        });
+      }
     } else {
+      const newSettings = await saveSettings({ reminderEnabled: false });
+      setSettings(newSettings);
+
+      // Instead of killing EVERYTHING, we kill the night check-in 
+      // but immediately reschedule the universal morning reminder.
       await cancelAllReminders();
+      await scheduleMorningReminderOnly();
     }
   };
 
@@ -256,7 +277,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     letterSpacing: -0.5,
   },
   content: {
@@ -268,7 +289,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 12,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textTransform: 'uppercase',
     letterSpacing: 1.5,
     marginBottom: 12,
@@ -294,11 +315,11 @@ const styles = StyleSheet.create({
   },
   rowText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
   },
   rowValue: {
     fontSize: 15,
-    fontWeight: '400',
+    fontFamily: 'Inter-Regular',
   },
   systemIcon: {
     width: 20,
@@ -318,6 +339,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 13,
+    fontFamily: 'Inter-Regular',
     fontStyle: 'italic',
     opacity: 0.6,
   },
