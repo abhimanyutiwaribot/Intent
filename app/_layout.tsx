@@ -4,7 +4,18 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Animated, Dimensions, StyleSheet, useColorScheme as useNativeColorScheme, View } from 'react-native';
 import { Colors } from '../constants/Colors';
 import { getSettings } from '../storage/settingsStorage';
-import { requestPermissions, scheduleDailyReminder } from '../utils/notificationUtils';
+import { checkHasPermission, requestPermissions, scheduleDailyReminder, scheduleMorningReminderOnly } from '../utils/notificationUtils';
+import * as SplashScreen from 'expo-splash-screen';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold
+} from '@expo-google-fonts/inter';
+
+SplashScreen.preventAutoHideAsync();
 
 const ThemeContext = createContext<{
   theme: 'light' | 'dark';
@@ -28,6 +39,14 @@ export default function RootLayout() {
   const segments = useSegments();
   const nativeColorScheme = useNativeColorScheme() || 'light';
 
+  const [fontsLoaded] = useFonts({
+    'Inter-Regular': Inter_400Regular,
+    'Inter-Medium': Inter_500Medium,
+    'Inter-SemiBold': Inter_600SemiBold,
+    'Inter-Bold': Inter_700Bold,
+    'Inter-ExtraBold': Inter_800ExtraBold,
+  });
+
   const [preference, setPreference] = useState<'light' | 'dark' | 'system'>('system');
   const [activeTheme, setActiveTheme] = useState<'light' | 'dark'>(nativeColorScheme);
   const [isReady, setIsReady] = useState(false);
@@ -49,11 +68,16 @@ export default function RootLayout() {
 
         setIsReady(true);
 
-        requestPermissions().then(hasPermission => {
-          if (hasPermission && settings.reminderEnabled) {
-            scheduleDailyReminder(settings.reminderHour, settings.reminderMinute);
+        if (settings.reminderEnabled) {
+          await scheduleDailyReminder(settings.reminderHour, settings.reminderMinute);
+        } else {
+          // If night reminder is OFF, we still try to schedule the "Universal" morning one
+          // but only if we already have permission (so we don't trigger a popup).
+          const hasPermission = await checkHasPermission();
+          if (hasPermission) {
+            await scheduleMorningReminderOnly();
           }
-        });
+        }
       } catch (e) {
         console.error("Layout Init Error:", e);
         setIsReady(true);
@@ -100,6 +124,16 @@ export default function RootLayout() {
   };
 
   const themeValues = Colors[activeTheme] || Colors.light;
+
+  useEffect(() => {
+    if (isReady && fontsLoaded && needsOnboarding !== null) {
+      SplashScreen.hideAsync();
+    }
+  }, [isReady, fontsLoaded, needsOnboarding]);
+
+  if (!fontsLoaded || !isReady || needsOnboarding === null) {
+    return null;
+  }
 
   return (
     <ThemeContext.Provider value={{ theme: activeTheme, preference, setThemePreference, setNeedsOnboarding }}>
