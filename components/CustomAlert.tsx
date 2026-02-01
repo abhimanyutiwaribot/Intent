@@ -103,7 +103,7 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, message, butt
                       styles.buttonText,
                       {
                         color: isDestructive ? theme.error : isCancel ? theme.secondaryText : theme.text,
-                        fontWeight: isDestructive || !isCancel ? '700' : '500'
+                        fontFamily: isDestructive || !isCancel ? 'Inter-Bold' : 'Inter-Medium'
                       }
                     ]}
                   >
@@ -147,13 +147,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '700',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   message: {
     fontSize: 16,
+    fontFamily: 'Inter-Regular',
     textAlign: 'center',
     lineHeight: 22,
   },
