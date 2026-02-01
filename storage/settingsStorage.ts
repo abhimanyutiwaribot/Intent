@@ -8,14 +8,16 @@ export interface AppSettings {
   reminderMinute: number;
   themePreference: 'light' | 'dark' | 'system';
   isOnboarded: boolean;
+  hasSeenReminderPrompt: boolean;
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
-  reminderEnabled: true,
+  reminderEnabled: false,
   reminderHour: 21,
   reminderMinute: 0,
   themePreference: 'system',
   isOnboarded: false,
+  hasSeenReminderPrompt: false,
 };
 
 export const getSettings = async (): Promise<AppSettings> => {
